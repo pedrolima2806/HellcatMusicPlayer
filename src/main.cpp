@@ -33,10 +33,28 @@ int main() {
         return 1;
     }
 
+    //Surfaces with buttons images
+    
+
+    //loop cycle
+    bool running = true;
+    SDL_Event event;
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_EVENT_QUIT ||
+                event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE) {
+                running = false;
+            }
+            SDL_RenderClear(renderer);
+            SDL_RenderPresent(renderer);
+        }
+    }
+
 
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
     return 0;
 }

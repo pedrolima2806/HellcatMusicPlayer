@@ -10,7 +10,11 @@ add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
 add_executable(hellcat_mp
-        src/main.cpp)
+        src/main.cpp
+        src/ui/Button.cpp
+        include/ui/Button.h
+        include/ui/Widget.h
+        include/ui/Widgets.h)
 
 target_include_directories(hellcat_mp PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
