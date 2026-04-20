@@ -21,4 +21,6 @@ public:
     void handleEvent(const SDL_Event &event) override;
     void update(float delta) override;
     void render(SDL_Renderer *renderer, SDL_Texture *texture) override;
+
+    static SDL_Texture* textureGenerator(SDL_Renderer *renderer, const std::string &path);
 };

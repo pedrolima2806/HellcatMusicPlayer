@@ -63,3 +63,19 @@ void Button::render(SDL_Renderer *renderer, SDL_Texture *texture) {
     SDL_RenderTexture(renderer, texture, nullptr, &this->rect);
     //SDL_RenderFillRect(renderer, &rect);
 }
+
+
+SDL_Texture* Button::textureGenerator(SDL_Renderer *renderer, const std::string &path) {
+    SDL_Surface *surface = IMG_Load(path.c_str());
+    if (!surface) {
+        std::cerr << "Failed to load image:" << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_DestroySurface(surface);
+    if (!texture) {
+        std::cerr << "Failed to create texture:" << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+    return texture;
+}

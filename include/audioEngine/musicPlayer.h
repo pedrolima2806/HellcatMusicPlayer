@@ -2,8 +2,7 @@
 
 class MusicPlayer {
     public:
-    MusicPlayer();
-    ~MusicPlayer();
+
 
 
 };

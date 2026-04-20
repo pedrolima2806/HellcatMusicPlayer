@@ -2,15 +2,12 @@
 #include<filesystem>
 #include <string>
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include "ui/Widgets.h"
 #include "audioEngine/playlist.h"
 
 namespace fs = std::filesystem;
-
-SDL_Texture* textureGenerator(SDL_Renderer *renderer, const std::string &path);
 
 int main() {
     //Initialization
@@ -21,9 +18,10 @@ int main() {
     if (!MIX_Init()) {
         std::cerr << "MIX_Init failed." << std::endl;
     }
+
     //Playlist folder
-    playlist playlist;
     const auto playlistFolder = fs::path("/home/pedro/Music");
+    playlist playlist;
     playlist.getPlaylist(playlistFolder);
     const auto trackList = playlist.getTrackList();
 
@@ -42,13 +40,6 @@ int main() {
         SDL_Quit();
         return 1;
     }
-
-    //Buttons surfaces
-    SDL_Texture *playPauseButtonTexture = textureGenerator(renderer, "../assets/images/ui/playButtonOrange.png"),
-    *nextButtonTexture = textureGenerator(renderer, "../assets/images/ui/nextButtonOrange.png"),
-    *previousButtonTexture = textureGenerator(renderer, "../assets/images/ui/previousButtonOrange.png"),
-    *menuButtonTexture = textureGenerator(renderer, "../assets/images/ui/catMenuLogoOrange.png");
-
 
     //Buttons
     auto windowFloatWidth = static_cast<float>(width), windowFloatHeight = static_cast<float>(height);
@@ -69,6 +60,12 @@ int main() {
         []() {
             std::cout << "Menu" << std::endl;
         });
+
+    //Buttons textures
+    SDL_Texture *playPauseButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/playButtonOrange.png"),
+    *nextButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/nextButtonOrange.png"),
+    *previousButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/previousButtonOrange.png"),
+    *menuButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/catMenuLogoOrange.png");
 
     //loop cycle
     bool running = true;
@@ -107,19 +104,4 @@ int main() {
     SDL_Quit();
 
     return 0;
-}
-
-SDL_Texture* textureGenerator(SDL_Renderer *renderer, const std::string &path) {
-    SDL_Surface *surface = IMG_Load(path.c_str());
-    if (!surface) {
-        std::cerr << "Failed to load image:" << SDL_GetError() << std::endl;
-        return nullptr;
-    }
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_DestroySurface(surface);
-    if (!texture) {
-        std::cerr << "Failed to create texture:" << SDL_GetError() << std::endl;
-        return nullptr;
-    }
-    return texture;
 }
