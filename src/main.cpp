@@ -1,3 +1,4 @@
+#include <complex>
 #include <iostream>
 #include<filesystem>
 #include <string>
@@ -6,8 +7,11 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include "ui/Widgets.h"
 #include "audioEngine/playlist.h"
+#include "audioEngine/musicPlayer.h"
 
 namespace fs = std::filesystem;
+
+MIX_Track *audioToTrack(MIX_Mixer *mixer, const std::vector <fs::path> &trackList, MIX_Track *track, int &musicNumber);
 
 int main() {
     //Initialization
@@ -41,20 +45,65 @@ int main() {
         return 1;
     }
 
+    //Mixer device
+    MIX_Mixer *mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
+    if (!mixer) {
+        std::cerr << "Failed to open audio device:" << SDL_GetError() << std::endl;
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
+    //Create and play track
+    int musicNumber = 0;
+    std::string pathString = trackList[musicNumber].c_str();
+    MIX_Audio *audio = MIX_LoadAudio(mixer, pathString.c_str(), false);
+    if (!audio) {
+        std::cerr << "Could not load audio from " << pathString << std::endl;
+    }
+
+    MIX_Track *track = MIX_CreateTrack(mixer);
+    if (!track) {
+        std::cerr << "Could not create track from " << pathString << std::endl;
+    }
+
+    if (!MIX_SetTrackAudio(track, audio)) {
+        std::cerr << "Could not set track audio from " << pathString << std::endl;
+    };
+
+    if (!MIX_PlayTrack(track, 0)) {
+        std::cerr << "Could not play track from " << pathString << std::endl;
+    };
+
     //Buttons
     auto windowFloatWidth = static_cast<float>(width), windowFloatHeight = static_cast<float>(height);
     float buttonWidth = windowFloatWidth / 12.0f, buttonHeight = buttonWidth, playButtonX = windowFloatWidth / 2 - buttonWidth / 2, playButtonY = 10 * windowFloatHeight / 12, menuButtonX = windowFloatWidth / 24, menuButtonY = windowFloatHeight / 24;
     Button playPauseButton(playButtonX, playButtonY, buttonWidth, buttonHeight,
-        []() {
-            std::cout << "Play" << std::endl;
+        [track]() {
+            if (MIX_TrackPlaying(track)) {
+                MIX_PauseTrack(track);
+                std::cout << "Paused" << std::endl;
+            } else if (!MIX_TrackPlaying(track)) {
+                MIX_ResumeTrack(track);
+                std::cout << "Resumed" << std::endl;
+            }
         });
     Button nextButton(playButtonX + 2 * buttonWidth, playButtonY, buttonWidth, buttonHeight,
-        []() {
-            std::cout << "Next" << std::endl;
+        [track, mixer, trackList, &musicNumber]() {
+            musicNumber = std::abs(musicNumber + 1) % static_cast<int>(trackList.size());
+            if (!MIX_PlayTrack(audioToTrack(mixer, trackList, track, musicNumber), 0)) {
+                std::cerr << "Could not play track."<< std::endl;
+            };
+            std::cout << "Next" << musicNumber << std::endl;
         });
     Button previousButton(playButtonX - 2 * buttonWidth, playButtonY, buttonWidth, buttonHeight,
-        []() {
-            std::cout << "Previous" << std::endl;
+        [track, mixer, trackList, &musicNumber]() {
+            musicNumber = (musicNumber - 1 + static_cast<int>(trackList.size())) % static_cast<int>(trackList.size());
+            if (!MIX_PlayTrack(audioToTrack(mixer, trackList, track, musicNumber), 0)) {
+                std::cerr << "Could not play track."<< std::endl;
+            };
+            std::cout << "Previous" << musicNumber << std::endl;
         });
     Button menuButton(menuButtonX, menuButtonY, buttonWidth, buttonHeight,
         []() {
@@ -97,11 +146,25 @@ int main() {
         SDL_RenderPresent(renderer);
     }
 
-
     //Finalization
+    MIX_DestroyMixer(mixer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    MIX_Quit();
     SDL_Quit();
 
     return 0;
+}
+
+MIX_Track *audioToTrack(MIX_Mixer *mixer, const std::vector <fs::path> &trackList, MIX_Track *track, int &musicNumber) {
+    std::string pathString = trackList[musicNumber].string();
+    MIX_Audio *audio = MIX_LoadAudio(mixer, pathString.c_str(), false);
+    if (!audio) {
+        std::cerr << "Could not load audio from " << pathString << std::endl;
+    }
+
+    if (!MIX_SetTrackAudio(track, audio)) {
+        std::cerr << "Could not set track audio from " << pathString << std::endl;
+    };
+    return track;
 }
