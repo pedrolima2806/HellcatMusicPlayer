@@ -1,10 +1,14 @@
 #include <iostream>
+#include<filesystem>
 #include <string>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include "ui/Widgets.h"
+#include "audioEngine/playlist.h"
+
+namespace fs = std::filesystem;
 
 SDL_Texture* textureGenerator(SDL_Renderer *renderer, const std::string &path);
 
@@ -17,6 +21,11 @@ int main() {
     if (!MIX_Init()) {
         std::cerr << "MIX_Init failed." << std::endl;
     }
+    //Playlist folder
+    playlist playlist;
+    const auto playlistFolder = fs::path("/home/pedro/Music");
+    playlist.getPlaylist(playlistFolder);
+    const auto trackList = playlist.getTrackList();
 
     //Window e renderer
     int width = 640, height = 480;
@@ -35,25 +44,30 @@ int main() {
     }
 
     //Buttons surfaces
-    SDL_Texture *playPauseButtonTexture = textureGenerator(renderer, "../assets/images/playPause.png"),
-    *nextButtonTexture = textureGenerator(renderer, "../assets/images/nextButton.png"),
-    *previousButtonTexture = textureGenerator(renderer, "../assets/images/previousButton.png");
+    SDL_Texture *playPauseButtonTexture = textureGenerator(renderer, "../assets/images/ui/playButtonOrange.png"),
+    *nextButtonTexture = textureGenerator(renderer, "../assets/images/ui/nextButtonOrange.png"),
+    *previousButtonTexture = textureGenerator(renderer, "../assets/images/ui/previousButtonOrange.png"),
+    *menuButtonTexture = textureGenerator(renderer, "../assets/images/ui/catMenuLogoOrange.png");
 
 
     //Buttons
     auto windowFloatWidth = static_cast<float>(width), windowFloatHeight = static_cast<float>(height);
-    float buttonWidth = windowFloatWidth / 12.0f, buttonHeight = buttonWidth, buttonX = windowFloatWidth / 2 - buttonWidth / 2, buttonY = 10 * windowFloatHeight / 12;
-    Button playPauseButton(buttonX, buttonY, buttonWidth, buttonHeight,
+    float buttonWidth = windowFloatWidth / 12.0f, buttonHeight = buttonWidth, playButtonX = windowFloatWidth / 2 - buttonWidth / 2, playButtonY = 10 * windowFloatHeight / 12, menuButtonX = windowFloatWidth / 24, menuButtonY = windowFloatHeight / 24;
+    Button playPauseButton(playButtonX, playButtonY, buttonWidth, buttonHeight,
         []() {
             std::cout << "Play" << std::endl;
         });
-    Button nextButton(buttonX + 2 * buttonWidth, buttonY, buttonWidth, buttonHeight,
+    Button nextButton(playButtonX + 2 * buttonWidth, playButtonY, buttonWidth, buttonHeight,
         []() {
             std::cout << "Next" << std::endl;
         });
-    Button previousButton(buttonX - 2 * buttonWidth, buttonY, buttonWidth, buttonHeight,
+    Button previousButton(playButtonX - 2 * buttonWidth, playButtonY, buttonWidth, buttonHeight,
         []() {
             std::cout << "Previous" << std::endl;
+        });
+    Button menuButton(menuButtonX, menuButtonY, buttonWidth, buttonHeight,
+        []() {
+            std::cout << "Menu" << std::endl;
         });
 
     //loop cycle
@@ -68,10 +82,12 @@ int main() {
             playPauseButton.handleEvent(event);
             nextButton.handleEvent(event);
             previousButton.handleEvent(event);
+            menuButton.handleEvent(event);
         }
         playPauseButton.update(0.0f);
         nextButton.update(0.0f);
         previousButton.update(0.0f);
+        menuButton.update(0.0f);
 
         SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
         SDL_RenderClear(renderer);
@@ -79,6 +95,7 @@ int main() {
         playPauseButton.render(renderer, playPauseButtonTexture);
         nextButton.render(renderer, nextButtonTexture);
         previousButton.render(renderer, previousButtonTexture);
+        menuButton.render(renderer, menuButtonTexture);
 
         SDL_RenderPresent(renderer);
     }

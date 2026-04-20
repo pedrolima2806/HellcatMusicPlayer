@@ -14,7 +14,11 @@ add_executable(hellcat_mp
         src/ui/Button.cpp
         include/ui/Button.h
         include/ui/Widget.h
-        include/ui/Widgets.h)
+        include/ui/Widgets.h
+        src/audioEngine/musicPlayer.cpp
+        include/audioEngine/musicPlayer.h
+        src/audioEngine/playlist.cpp
+        include/audioEngine/playlist.h)
 
 target_include_directories(hellcat_mp PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
