@@ -5,10 +5,20 @@
 
 namespace fs = std::filesystem;
 
-class MusicPlayer {
-    public:
-    void *playTrack (MIX_Mixer *mixer, const std::vector <fs::path> &trackList );
+class musicPlayer {
+private:
+    MIX_Mixer *mixer;
+    MIX_Track *track;
+    std::vector<fs::path> trackList;
+    int musicNumber = 0;
 
+public:
+    musicPlayer(MIX_Mixer *mixer, MIX_Track *track, const std::vector<fs::path> &trackList);
 
+    void play();
+    void pause();
+    void resume();
+    void next();
+    void previous();
 
 };

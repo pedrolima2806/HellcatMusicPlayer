@@ -68,42 +68,28 @@ int main() {
         std::cerr << "Could not create track from " << pathString << std::endl;
     }
 
-    if (!MIX_SetTrackAudio(track, audio)) {
-        std::cerr << "Could not set track audio from " << pathString << std::endl;
-    };
-
-    if (!MIX_PlayTrack(track, 0)) {
-        std::cerr << "Could not play track from " << pathString << std::endl;
-    };
+    //Music player initialization
+    musicPlayer hcMusicPlayer(mixer, track, trackList);
+    hcMusicPlayer.play();
 
     //Buttons
     auto windowFloatWidth = static_cast<float>(width), windowFloatHeight = static_cast<float>(height);
     float buttonWidth = windowFloatWidth / 12.0f, buttonHeight = buttonWidth, playButtonX = windowFloatWidth / 2 - buttonWidth / 2, playButtonY = 10 * windowFloatHeight / 12, menuButtonX = windowFloatWidth / 24, menuButtonY = windowFloatHeight / 24;
     Button playPauseButton(playButtonX, playButtonY, buttonWidth, buttonHeight,
-        [track]() {
+        [&hcMusicPlayer, track]() {
             if (MIX_TrackPlaying(track)) {
-                MIX_PauseTrack(track);
-                std::cout << "Paused" << std::endl;
+                hcMusicPlayer.pause();
             } else if (!MIX_TrackPlaying(track)) {
-                MIX_ResumeTrack(track);
-                std::cout << "Resumed" << std::endl;
+                hcMusicPlayer.resume();
             }
         });
     Button nextButton(playButtonX + 2 * buttonWidth, playButtonY, buttonWidth, buttonHeight,
-        [track, mixer, trackList, &musicNumber]() {
-            musicNumber = std::abs(musicNumber + 1) % static_cast<int>(trackList.size());
-            if (!MIX_PlayTrack(audioToTrack(mixer, trackList, track, musicNumber), 0)) {
-                std::cerr << "Could not play track."<< std::endl;
-            };
-            std::cout << "Next" << musicNumber << std::endl;
+        [&hcMusicPlayer]() {
+            hcMusicPlayer.next();
         });
     Button previousButton(playButtonX - 2 * buttonWidth, playButtonY, buttonWidth, buttonHeight,
-        [track, mixer, trackList, &musicNumber]() {
-            musicNumber = (musicNumber - 1 + static_cast<int>(trackList.size())) % static_cast<int>(trackList.size());
-            if (!MIX_PlayTrack(audioToTrack(mixer, trackList, track, musicNumber), 0)) {
-                std::cerr << "Could not play track."<< std::endl;
-            };
-            std::cout << "Previous" << musicNumber << std::endl;
+        [&hcMusicPlayer]() {
+            hcMusicPlayer.previous();
         });
     Button menuButton(menuButtonX, menuButtonY, buttonWidth, buttonHeight,
         []() {
@@ -154,17 +140,4 @@ int main() {
     SDL_Quit();
 
     return 0;
-}
-
-MIX_Track *audioToTrack(MIX_Mixer *mixer, const std::vector <fs::path> &trackList, MIX_Track *track, int &musicNumber) {
-    std::string pathString = trackList[musicNumber].string();
-    MIX_Audio *audio = MIX_LoadAudio(mixer, pathString.c_str(), false);
-    if (!audio) {
-        std::cerr << "Could not load audio from " << pathString << std::endl;
-    }
-
-    if (!MIX_SetTrackAudio(track, audio)) {
-        std::cerr << "Could not set track audio from " << pathString << std::endl;
-    };
-    return track;
 }
