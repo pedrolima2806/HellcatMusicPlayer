@@ -1,4 +1,6 @@
+#include <iostream>
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include "ui/Button.h"
 
 Button::Button(float x, float y, float width, float height, const std::function<void()> &onClick) : rect{x, y, width, height}, state(ButtonState::Normal), onClick(onClick){};
@@ -46,7 +48,7 @@ void Button::update(float delta) {
     (void)delta;
 }
 
-void Button::render(SDL_Renderer *renderer) {
+void Button::render(SDL_Renderer *renderer, SDL_Texture *texture) {
     switch (state) {
         case ButtonState::Normal:
             SDL_SetRenderDrawColor(renderer, 80, 80, 80, 255);
@@ -58,6 +60,6 @@ void Button::render(SDL_Renderer *renderer) {
             SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
             break;
     }
-
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderTexture(renderer, texture, nullptr, &this->rect);
+    //SDL_RenderFillRect(renderer, &rect);
 }

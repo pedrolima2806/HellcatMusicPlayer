@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-
+#include <string>
 #include "Widget.h"
 
 enum class ButtonState {
@@ -21,5 +21,5 @@ public:
 
     void handleEvent(const SDL_Event &event) override;
     void update(float delta) override;
-    void render(SDL_Renderer *renderer) override;
+    void render(SDL_Renderer *renderer, SDL_Texture *texture) override;
 };
