@@ -10,10 +10,10 @@ private:
     MIX_Mixer *mixer;
     MIX_Track *track;
     std::vector<fs::path> trackList;
-    int musicNumber = 0;
+    int &musicNumber;
 
 public:
-    musicPlayer(MIX_Mixer *mixer, MIX_Track *track, const std::vector<fs::path> &trackList);
+    musicPlayer(MIX_Mixer *mixer, MIX_Track *track, const std::vector<fs::path> &trackList, int &musicNumber);
 
     void play();
     void pause();

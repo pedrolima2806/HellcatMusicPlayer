@@ -8,6 +8,7 @@
 #include "ui/Widgets.h"
 #include "audioEngine/playlist.h"
 #include "audioEngine/musicPlayer.h"
+#include "ui/TextRenderer.h"
 
 namespace fs = std::filesystem;
 
@@ -21,6 +22,9 @@ int main() {
     }
     if (!MIX_Init()) {
         std::cerr << "MIX_Init failed." << std::endl;
+    }
+    if (!TTF_Init()) {
+        std::cerr << "TTF_Init failed." << std::endl;
     }
 
     //Playlist folder
@@ -55,6 +59,16 @@ int main() {
         return 1;
     }
 
+    //Font
+    TTF_Font *font = TTF_OpenFont("../assets/fonts/Quantico/Quantico-Regular.ttf", 16);
+    if (!font) {
+        std::cerr << "Failed to open font:" << SDL_GetError() << std::endl;
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
     //Create and play track
     int musicNumber = 0;
     std::string pathString = trackList[musicNumber].c_str();
@@ -62,14 +76,18 @@ int main() {
     if (!audio) {
         std::cerr << "Could not load audio from " << pathString << std::endl;
     }
-
     MIX_Track *track = MIX_CreateTrack(mixer);
     if (!track) {
         std::cerr << "Could not create track from " << pathString << std::endl;
     }
 
+    //Text display
+    TextRenderer textRenderer(renderer, font);
+    std::string text;
+    int trackTitleWidth, trackTitleHeight;
+
     //Music player initialization
-    musicPlayer hcMusicPlayer(mixer, track, trackList);
+    musicPlayer hcMusicPlayer(mixer, track, trackList, musicNumber);
     hcMusicPlayer.play();
 
     //Buttons
@@ -116,14 +134,22 @@ int main() {
             previousButton.handleEvent(event);
             menuButton.handleEvent(event);
         }
+        //update
         playPauseButton.update(0.0f);
         nextButton.update(0.0f);
         previousButton.update(0.0f);
         menuButton.update(0.0f);
 
+        //background
         SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
         SDL_RenderClear(renderer);
 
+        //text rendering
+        text = textRenderer.pathStrToText(trackList[musicNumber].c_str());
+        TTF_GetStringSize(font, text.c_str(), 0, &trackTitleWidth, &trackTitleHeight);
+        textRenderer.renderText(text, windowFloatWidth/2 - static_cast<float>(trackTitleWidth)/2, playButtonY - buttonHeight / 2 - windowFloatHeight / 24);
+
+        //button rendering
         playPauseButton.render(renderer, playPauseButtonTexture);
         nextButton.render(renderer, nextButtonTexture);
         previousButton.render(renderer, previousButtonTexture);
@@ -136,6 +162,7 @@ int main() {
     MIX_DestroyMixer(mixer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     MIX_Quit();
     SDL_Quit();
 

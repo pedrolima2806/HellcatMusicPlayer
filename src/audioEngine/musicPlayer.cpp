@@ -1,14 +1,13 @@
 #include <iostream>
-#include <SDL3_mixer/SDL_mixer.h>
-#include "audioEngine/musicPlayer.h"
-
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <SDL3_mixer/SDL_mixer.h>
+#include "audioEngine/musicPlayer.h"
 
 namespace fs = std::filesystem;
 
-musicPlayer::musicPlayer(MIX_Mixer *mixer, MIX_Track *track, const std::vector<fs::path> &trackList) : mixer(mixer), track(track), trackList(trackList){};
+musicPlayer::musicPlayer(MIX_Mixer *mixer, MIX_Track *track, const std::vector<fs::path> &trackList, int &musicNumber) : mixer(mixer), track(track), trackList(trackList), musicNumber(musicNumber) {};
 
 void musicPlayer::play() {
     if (trackList.empty()) return;

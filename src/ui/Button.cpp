@@ -61,7 +61,6 @@ void Button::render(SDL_Renderer *renderer, SDL_Texture *texture) {
             break;
     }
     SDL_RenderTexture(renderer, texture, nullptr, &this->rect);
-    //SDL_RenderFillRect(renderer, &rect);
 }
 
 
