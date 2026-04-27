@@ -33,7 +33,7 @@ private:
     std::vector<std::pair<size_t, size_t>> currentAnimation;
     std::vector<SDL_FRect> animationRects;
 
-    double frameDurationMs = 150.0;
+    double frameDurationMs = 50.0;
     double timeBuffer = 0.0;
 
 public:

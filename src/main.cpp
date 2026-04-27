@@ -121,18 +121,16 @@ int main() {
     *menuButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/Buttons/catMenuLogoOrange.png");
 
     //Animation parameters
-    size_t spritesheetRows = 4, spritesheetColumns = 10, spriteWidth = 32, spriteHeight = 32;
-    Animation musicPlayerAnimation(playButtonX, playButtonY-300, 2*buttonWidth, 2*buttonHeight, spritesheetRows, spritesheetColumns, spriteWidth, spriteHeight, track);
-    musicPlayerAnimation.animationRectsMaker(renderer, "../assets/images/ui/Animations/testAnimation.png");
+    size_t spritesheetRows = 2, spritesheetColumns = 5, spriteWidth = 128, spriteHeight = 128;
+    Animation musicPlayerAnimation(playButtonX - buttonWidth/2, playButtonY-4.5*buttonHeight, 2*buttonWidth, 2*buttonHeight, spritesheetRows, spritesheetColumns, spriteWidth, spriteHeight, track);
+    musicPlayerAnimation.animationRectsMaker(renderer, "../assets/images/ui/Animations/musicPlayerAnimation.png");
 
     //Define animations
-    std::vector<std::pair<size_t, size_t>> animation1 = {{0,0}, {0,1}, {0,2}, {0,3}};
-    std::vector<std::pair<size_t, size_t>> animation2 = {{1,0}, {1,1}, {1,2}, {1,3}};
-    std::vector<std::pair<size_t, size_t>> animation3 = {{2,0}, {2,1}, {2,2}, {2,3}};
-    std::vector<std::pair<size_t, size_t>> animation4 = {{3,0}, {3,1}, {3,2}, {3,3}, {3,4},{3,5}, {3,6}, {3,7}, {3,8}, {3,9}};
+    std::vector<std::pair<size_t, size_t>> animation1 = {{0,0}, {0,1}, {0,2}, {0,3}, {0,4}, {1,0},{1,1},{1,2},{1,3},{1,4}};
+
 
     //set animation
-    musicPlayerAnimation.setCurrentAnimation(animation4);
+    musicPlayerAnimation.setCurrentAnimation(animation1);
 
     //Loop cycle
     auto previousTime = std::chrono::steady_clock::now();
