@@ -20,7 +20,9 @@ add_executable(hellcat_mp
         src/audioEngine/playlist.cpp
         include/audioEngine/playlist.h
         src/ui/TextRenderer.cpp
-        include/ui/TextRenderer.h)
+        include/ui/TextRenderer.h
+        src/ui/Animation.cpp
+        include/ui/Animation.h)
 
 target_include_directories(hellcat_mp PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"

@@ -44,7 +44,7 @@ void Button::handleEvent(const SDL_Event &event) {
     }
 }
 
-void Button::update(float delta) {
+void Button::update(double delta) {
     (void)delta;
 }
 

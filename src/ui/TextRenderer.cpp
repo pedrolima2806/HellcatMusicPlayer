@@ -1,4 +1,3 @@
-#include <iostream>
 #include <filesystem>
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -9,7 +8,7 @@ namespace fs = std::filesystem;
 TextRenderer::TextRenderer(SDL_Renderer *renderer, TTF_Font *font) : renderer(renderer), font(font) {};
 
 std::string TextRenderer::pathStrToText(const std::string &pathString) {
-    fs::path textPath(pathString);
+    const fs::path textPath(pathString);
     return textPath.filename().string();
 };
 

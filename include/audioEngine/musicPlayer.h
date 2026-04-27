@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <functional>
+#include <SDL3_mixer/SDL_mixer.h>
 
 namespace fs = std::filesystem;
 

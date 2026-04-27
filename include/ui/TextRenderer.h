@@ -12,6 +12,6 @@ private:
     public:
     TextRenderer(SDL_Renderer *renderer, TTF_Font *font);
 
-    std::string pathStrToText(const std::string &pathString);
+    static std::string pathStrToText(const std::string &pathString);
     void renderText (const std::string &text, float x, float y);
 };

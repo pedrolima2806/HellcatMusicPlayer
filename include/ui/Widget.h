@@ -7,6 +7,6 @@ class Widget {
     virtual ~Widget() = default;
 
     virtual void handleEvent(const SDL_Event &event) = 0;
-    virtual void update(float dt) = 0;
+    virtual void update(double dt) = 0;
     virtual void render(SDL_Renderer *renderer, SDL_Texture *texture) = 0;
 };

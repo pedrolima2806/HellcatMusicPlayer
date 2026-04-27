@@ -115,12 +115,27 @@ int main() {
         });
 
     //Buttons textures
-    SDL_Texture *playPauseButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/playButtonOrange.png"),
-    *nextButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/nextButtonOrange.png"),
-    *previousButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/previousButtonOrange.png"),
-    *menuButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/catMenuLogoOrange.png");
+    SDL_Texture *playPauseButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/Buttons/playButtonOrange.png"),
+    *nextButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/Buttons/nextButtonOrange.png"),
+    *previousButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/Buttons/previousButtonOrange.png"),
+    *menuButtonTexture = Button::textureGenerator(renderer, "../assets/images/ui/Buttons/catMenuLogoOrange.png");
 
-    //loop cycle
+    //Animation parameters
+    size_t spritesheetRows = 4, spritesheetColumns = 10, spriteWidth = 32, spriteHeight = 32;
+    Animation musicPlayerAnimation(playButtonX, playButtonY-300, 2*buttonWidth, 2*buttonHeight, spritesheetRows, spritesheetColumns, spriteWidth, spriteHeight, track);
+    musicPlayerAnimation.animationRectsMaker(renderer, "../assets/images/ui/Animations/testAnimation.png");
+
+    //Define animations
+    std::vector<std::pair<size_t, size_t>> animation1 = {{0,0}, {0,1}, {0,2}, {0,3}};
+    std::vector<std::pair<size_t, size_t>> animation2 = {{1,0}, {1,1}, {1,2}, {1,3}};
+    std::vector<std::pair<size_t, size_t>> animation3 = {{2,0}, {2,1}, {2,2}, {2,3}};
+    std::vector<std::pair<size_t, size_t>> animation4 = {{3,0}, {3,1}, {3,2}, {3,3}, {3,4},{3,5}, {3,6}, {3,7}, {3,8}, {3,9}};
+
+    //set animation
+    musicPlayerAnimation.setCurrentAnimation(animation4);
+
+    //Loop cycle
+    auto previousTime = std::chrono::steady_clock::now();
     bool running = true;
     SDL_Event event;
     while (running) {
@@ -133,27 +148,34 @@ int main() {
             nextButton.handleEvent(event);
             previousButton.handleEvent(event);
             menuButton.handleEvent(event);
-        }
-        //update
-        playPauseButton.update(0.0f);
-        nextButton.update(0.0f);
-        previousButton.update(0.0f);
-        menuButton.update(0.0f);
 
+            musicPlayerAnimation.handleEvent(event);
+        }
         //background
         SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
         SDL_RenderClear(renderer);
 
         //text rendering
-        text = textRenderer.pathStrToText(trackList[musicNumber].c_str());
+        text = TextRenderer::pathStrToText(trackList[musicNumber].c_str());
         TTF_GetStringSize(font, text.c_str(), 0, &trackTitleWidth, &trackTitleHeight);
         textRenderer.renderText(text, windowFloatWidth/2 - static_cast<float>(trackTitleWidth)/2, playButtonY - buttonHeight / 2 - windowFloatHeight / 24);
+
+        //deltaMs
+        auto currentTime = std::chrono::steady_clock::now();
+        double deltaMs = std::chrono::duration<double, std::milli>(currentTime - previousTime).count();
+        previousTime = currentTime;
+
+        //update
+        musicPlayerAnimation.update(deltaMs);
 
         //button rendering
         playPauseButton.render(renderer, playPauseButtonTexture);
         nextButton.render(renderer, nextButtonTexture);
         previousButton.render(renderer, previousButtonTexture);
         menuButton.render(renderer, menuButtonTexture);
+
+        //animation rendering
+        musicPlayerAnimation.render(renderer, nullptr);
 
         SDL_RenderPresent(renderer);
     }
